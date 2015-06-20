@@ -1,0 +1,23 @@
+{
+  "name": "bapcat/propifier",
+  "description": "A trait that improves PHP's properties",
+  "license": "GPLv3",
+  "homepage": "http://github.com/BapCat/Propifier",
+  "keywords": ["Property", "Properties", "Accessor", "Mutator", "Get", "Set", "Getter", "Setter"],
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Corey Frenette",
+      "email": "corey@narwhunderful.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0",
+    "icanboogie/inflector": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "BapCat\\Propifier\\": "src/"
+    }
+  }
+}
