@@ -45,7 +45,7 @@ trait PropifierTrait {
       return self::$method_map[get_class($this)][$prefix][$name];
     }
     
-    throw new NoSuchPropertyException($name);
+    throw new NoSuchPropertyException($name, "Property $name does not exist.");
   }
   
   public function __get($name) {
