@@ -13,36 +13,92 @@ trait PropifierTrait {
     if(!array_key_exists($name, self::$method_map)) {
       $class = new ReflectionClass($obj);
       $methods = $class->getMethods(ReflectionMethod::IS_PROTECTED);
+      $properties = self::filterProperties($methods);
       
       $inflector = Inflector::get();
       
-      self::$method_map[$name] = [
-        'get' => self::remapMethods([$inflector, 'underscore'], $methods, 'get'),
-        'set' => self::remapMethods([$inflector, 'underscore'], $methods, 'set')
-      ];
+      $method_map = self::remapProperties([$inflector, 'underscore'], $properties);
+      
+      self::$method_map[$name] = self::extractProperties($obj, $method_map);
     }
   }
   
-  private static function remapMethods(callable $inflector, array $methods, $prefix) {
-    $properties = array_filter($methods, function(ReflectionMethod $method) use($prefix) {
-      return (strlen($method->name) > strlen($prefix)) && (strpos($method->name, $prefix) === 0);
+  private static function filterProperties(array $methods) {
+    return array_filter($methods, function(ReflectionMethod $method) {
+      return
+        (strlen($method->name) > 3) && (
+          (strpos($method->name, 'get') === 0) ||
+          (strpos($method->name, 'set') === 0)
+        )
+      ;
     });
-    
+  }
+  
+  private static function remapProperties(callable $inflector, array $properties) {
     $mapped = [];
     
-    foreach($properties as $index => $method) {
-      $prop_name = $inflector(substr($method->name, strlen($prefix)));
-      $mapped[$prop_name] = $method->name;
+    foreach($properties as $property) {
+      $prop_name = $inflector(substr($property->name, 3));
+      
+      if(!isset($mapped[$prop_name])) {
+        $mapped[$prop_name] = ['get' => null, 'set' => null];
+      }
+      
+      $mapped[$prop_name][substr($property->name, 0, 3)] = $property;
     }
     
     return $mapped;
   }
   
+  private static function extractProperties($obj, array $properties) {
+    $extracted = [];
+    
+    foreach($properties as $name => $property) {
+      $hasGet = $property['get'] !== null;
+      $hasSet = $property['set'] !== null;
+      
+      if($hasGet && $hasSet) {
+        if(
+          $property['get']->getNumberOfParameters() == 0 &&
+          $property['set']->getNumberOfParameters() == 1
+        ) {
+          $extracted[$name] = ['get' => $property['get']->name, 'set' => $property['set']->name];
+        } elseif(
+          $property['get']->getNumberOfParameters() == 1 &&
+          $property['set']->getNumberOfParameters() == 2
+        ) {
+          $array_property = new ArrayProperty($obj, $property['get'], $property['set']);
+          $extracted[$name] = ['get' => $array_property, 'set' => $array_property];
+        } else {
+          throw new MismatchedPropertiesException($property['get'], $property['set']);
+        }
+      } elseif($hasGet) {
+        if($property['get']->getNumberOfParameters() == 0) {
+          $extracted[$name] = ['get' => $property['get']->name, 'set' => null];
+        } elseif($property['get']->getNumberOfParameters() == 1) {
+          $extracted[$name] = ['get' => new ArrayProperty($obj, $property['get'], null), 'set' => null];
+        } else {
+          throw new InvalidPropertyException($property['get']);
+        }
+      } elseif($hasSet) {
+        if($property['set']->getNumberOfParameters() == 1) {
+          $extracted[$name] = ['get' => null, 'set' => $property['set']->name];
+        } elseif($property['set']->getNumberOfParameters() == 2) {
+          $extracted[$name] = ['get' => null, 'set' => new ArrayProperty($obj, null, $property['set'])];
+        } else {
+          throw new InvalidPropertyException($property['set']);
+        }
+      }
+    }
+    
+    return $extracted;
+  }
+  
   private function getMethod($name, $prefix) {
     self::buildDependencies($this);
     
-    if(array_key_exists($name, self::$method_map[get_class($this)][$prefix])) {
-      return self::$method_map[get_class($this)][$prefix][$name];
+    if(isset(self::$method_map[get_class($this)][$name][$prefix])) {
+      return self::$method_map[get_class($this)][$name][$prefix];
     }
     
     throw new NoSuchPropertyException($name, "Property $name does not exist.");
@@ -50,11 +106,21 @@ trait PropifierTrait {
   
   public function __get($name) {
     $method = $this->getMethod($name, 'get');
+    
+    if($method instanceof ArrayProperty) {
+      return $method;
+    }
+    
     return $this->$method();
   }
   
   public function __set($name, $value) {
     $method = $this->getMethod($name, 'set');
+    
+    if($method instanceof ArrayProperty) {
+      return $method;
+    }
+    
     $this->$method($value);
   }
 }
