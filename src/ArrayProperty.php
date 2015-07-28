@@ -8,8 +8,7 @@ class ArrayProperty implements ArrayAccess {
   private $get;
   private $set;
   
-  public function __construct($obj, ReflectionMethod $get = null, ReflectionMethod $set = null) {
-    $this->obj = $obj;
+  public function __construct(ReflectionMethod $get = null, ReflectionMethod $set = null) {
     $this->get = $get;
     $this->set = $set;
     
@@ -20,6 +19,10 @@ class ArrayProperty implements ArrayAccess {
     if($set !== null) {
       $set->setAccessible(true);
     }
+  }
+  
+  public function this($obj) {
+    $this->obj = $obj;
   }
   
   public function offsetGet($offset) {

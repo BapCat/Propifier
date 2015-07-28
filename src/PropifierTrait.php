@@ -67,7 +67,7 @@ trait PropifierTrait {
           $property['get']->getNumberOfParameters() == 1 &&
           $property['set']->getNumberOfParameters() == 2
         ) {
-          $array_property = new ArrayProperty($obj, $property['get'], $property['set']);
+          $array_property = new ArrayProperty($property['get'], $property['set']);
           $extracted[$name] = ['get' => $array_property, 'set' => $array_property];
         } else {
           throw new MismatchedPropertiesException($property['get'], $property['set']);
@@ -76,7 +76,7 @@ trait PropifierTrait {
         if($property['get']->getNumberOfParameters() == 0) {
           $extracted[$name] = ['get' => $property['get']->name, 'set' => null];
         } elseif($property['get']->getNumberOfParameters() == 1) {
-          $extracted[$name] = ['get' => new ArrayProperty($obj, $property['get'], null), 'set' => null];
+          $extracted[$name] = ['get' => new ArrayProperty($property['get'], null), 'set' => null];
         } else {
           throw new InvalidPropertyException($property['get']);
         }
@@ -84,7 +84,7 @@ trait PropifierTrait {
         if($property['set']->getNumberOfParameters() == 1) {
           $extracted[$name] = ['get' => null, 'set' => $property['set']->name];
         } elseif($property['set']->getNumberOfParameters() == 2) {
-          $extracted[$name] = ['get' => null, 'set' => new ArrayProperty($obj, null, $property['set'])];
+          $extracted[$name] = ['get' => null, 'set' => new ArrayProperty(null, $property['set'])];
         } else {
           throw new InvalidPropertyException($property['set']);
         }
@@ -108,6 +108,7 @@ trait PropifierTrait {
     $method = $this->getMethod($name, 'get');
     
     if($method instanceof ArrayProperty) {
+      $method->this($this);
       return $method;
     }
     
@@ -118,6 +119,7 @@ trait PropifierTrait {
     $method = $this->getMethod($name, 'set');
     
     if($method instanceof ArrayProperty) {
+      $method->this($this);
       return $method;
     }
     
