@@ -188,6 +188,6 @@ $foo->array[1] = 'Test?'; // exception
 
 #### Efficiency
 
-Propifier will make you more efficient at writing code that matters, and unlike similar solutions, Propifier is was
+Propifier will make you more efficient at writing code that matters, and unlike similar solutions, Propifier is
 designed from the ground up to be fast.  It figures everything out at the start, and maintains a static mapping of all
 of your objects' properties so using them is always fast.
