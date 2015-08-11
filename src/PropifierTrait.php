@@ -84,7 +84,7 @@ trait PropifierTrait {
         if($property['set']->getNumberOfParameters() == 1) {
           $extracted[$name] = ['get' => null, 'set' => $property['set']->name];
         } elseif($property['set']->getNumberOfParameters() == 2) {
-          $extracted[$name] = ['get' => null, 'set' => new ArrayProperty(null, $property['set'])];
+          $extracted[$name] = ['get' => new ArrayProperty(null, $property['set']), 'set' => null];
         } else {
           throw new InvalidPropertyException($property['set']);
         }
@@ -117,11 +117,6 @@ trait PropifierTrait {
   
   public function __set($name, $value) {
     $method = $this->getMethod($name, 'set');
-    
-    if($method instanceof ArrayProperty) {
-      $method->this($this);
-      return $method;
-    }
     
     $this->$method($value);
   }
