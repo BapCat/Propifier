@@ -152,7 +152,7 @@ trait PropifierTrait {
    * 
    * @return array The executable property
    */
-  private function getMethod($name, $prefix) {
+  private function __propifier_getMethod($name, $prefix) {
     self::buildDependencies($this);
     
     if(isset(self::$method_map[get_class($this)][$name][$prefix])) {
@@ -170,7 +170,7 @@ trait PropifierTrait {
    * @return mixed The value of the property
    */
   public function __get($name) {
-    $method = $this->getMethod($name, 'get');
+    $method = $this->__propifier_getMethod($name, 'get');
     
     if($method instanceof ArrayProperty) {
       $method->this($this);
@@ -187,7 +187,7 @@ trait PropifierTrait {
    * @param  mixed  $value The value to set the property to
    */
   public function __set($name, $value) {
-    $method = $this->getMethod($name, 'set');
+    $method = $this->__propifier_getMethod($name, 'set');
     
     $this->$method($value);
   }

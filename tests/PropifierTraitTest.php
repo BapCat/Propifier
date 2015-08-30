@@ -8,6 +8,7 @@ require_once __DIR__ . '/stubs/ArraySetOnly.php';
 require_once __DIR__ . '/stubs/Mismatch.php';
 require_once __DIR__ . '/stubs/InvalidGet.php';
 require_once __DIR__ . '/stubs/InvalidSet.php';
+require_once __DIR__ . '/stubs/GetterCalledGetMethod.php';
 
 class ValueTest extends PHPUnit_Framework_TestCase {
   public function testMagicProperties() {
@@ -92,5 +93,12 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     
     $this->setExpectedException('BapCat\Propifier\InvalidPropertyException');
     $value->something = '';
+  }
+  
+  // See issue #2
+  public function testGetterCalledGetMethod() {
+    $getMethod = new GetterCalledGetMethod();
+    
+    $this->assertSame('test', $getMethod->method);
   }
 }
