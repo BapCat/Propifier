@@ -169,6 +169,11 @@ class Foo {
   protected function getArray($index) {
     return $this->array[$index];
   }
+  
+  // You can even define iterators to add foreach support
+  protected function itrArray() {
+    return new ArrayIterator($this->array);
+  }
 }
 ```
 
@@ -184,6 +189,10 @@ $foo->b = new B(); // exception
 echo $foo->array['test']; // -> 'Test'
 $foo->array = []; // exception
 $foo->array[1] = 'Test?'; // exception
+
+foreach($foo->array as $key => $value) {
+  // ...
+}
 ```
 
 #### Efficiency
