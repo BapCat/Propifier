@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.org/BapCat/Propifier.svg?branch=1.0.1)](https://travis-ci.org/BapCat/Propifier)
-[![Coverage Status](https://coveralls.io/repos/BapCat/Propifier/badge.svg?branch=1.0.1)](https://coveralls.io/r/BapCat/Propifier?branch=1.0.1)
+[![Build Status](https://travis-ci.org/BapCat/Propifier.svg?branch=1.1.0)](https://travis-ci.org/BapCat/Propifier)
+[![Coverage Status](https://coveralls.io/repos/BapCat/Propifier/badge.svg?branch=1.1.0)](https://coveralls.io/r/BapCat/Propifier?branch=1.1.0)
 [![License](https://img.shields.io/packagist/l/BapCat/Propifier.svg)](https://img.shields.io/packagist/l/BapCat/Propifier.svg)
 
 # Propifier
