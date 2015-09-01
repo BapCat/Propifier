@@ -51,7 +51,8 @@ trait PropifierTrait {
       return
         (strlen($method->name) > 3) && (
           (strpos($method->name, 'get') === 0) ||
-          (strpos($method->name, 'set') === 0)
+          (strpos($method->name, 'set') === 0) ||
+          (strpos($method->name, 'itr') === 0)
         )
       ;
     });
@@ -72,7 +73,7 @@ trait PropifierTrait {
       $prop_name = $inflector(substr($property->name, 3));
       
       if(!isset($mapped[$prop_name])) {
-        $mapped[$prop_name] = ['get' => null, 'set' => null];
+        $mapped[$prop_name] = ['get' => null, 'set' => null, 'itr' => null];
       }
       
       $mapped[$prop_name][substr($property->name, 0, 3)] = $property;
@@ -111,7 +112,7 @@ trait PropifierTrait {
           $property['set']->getNumberOfParameters() == 2
         ) {
           // Array get and set
-          $array_property = new ArrayProperty($property['get'], $property['set']);
+          $array_property = new ArrayProperty($property['get'], $property['set'], $property['itr']);
           $extracted[$name] = ['get' => $array_property, 'set' => $array_property];
         } else {
           throw new MismatchedPropertiesException($property['get'], $property['set']);
@@ -122,7 +123,7 @@ trait PropifierTrait {
           $extracted[$name] = ['get' => $property['get']->name, 'set' => null];
         } elseif($property['get']->getNumberOfParameters() == 1) {
           // Array get
-          $extracted[$name] = ['get' => new ArrayProperty($property['get'], null), 'set' => null];
+          $extracted[$name] = ['get' => new ArrayProperty($property['get'], null, $property['itr']), 'set' => null];
         } else {
           throw new InvalidPropertyException($property['get']);
         }
@@ -132,10 +133,12 @@ trait PropifierTrait {
           $extracted[$name] = ['get' => null, 'set' => $property['set']->name];
         } elseif($property['set']->getNumberOfParameters() == 2) {
           // Array set
-          $extracted[$name] = ['get' => new ArrayProperty(null, $property['set']), 'set' => null];
+          $extracted[$name] = ['get' => new ArrayProperty(null, $property['set'], $property['itr']), 'set' => null];
         } else {
           throw new InvalidPropertyException($property['set']);
         }
+      } else {
+        $extracted[$name] = ['get' => new ArrayProperty(null, null, $property['itr']), 'set' => null];
       }
     }
     

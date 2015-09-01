@@ -3,12 +3,20 @@
 require_once __DIR__ . '/stubs/Dummy.php';
 require_once __DIR__ . '/stubs/GetOnly.php';
 require_once __DIR__ . '/stubs/SetOnly.php';
+require_once __DIR__ . '/stubs/ArrayAll.php';
 require_once __DIR__ . '/stubs/ArrayGetOnly.php';
 require_once __DIR__ . '/stubs/ArraySetOnly.php';
+require_once __DIR__ . '/stubs/ArrayItrOnly.php';
+require_once __DIR__ . '/stubs/ArrayItrAndGet.php';
+require_once __DIR__ . '/stubs/ArrayItrAndSet.php';
 require_once __DIR__ . '/stubs/Mismatch.php';
 require_once __DIR__ . '/stubs/InvalidGet.php';
 require_once __DIR__ . '/stubs/InvalidSet.php';
 require_once __DIR__ . '/stubs/GetterCalledGetMethod.php';
+
+use BapCat\Propifier\InvalidPropertyException;
+use BapCat\Propifier\MismatchedPropertiesException;
+use BapCat\Propifier\NoSuchPropertyException;
 
 class ValueTest extends PHPUnit_Framework_TestCase {
   public function testMagicProperties() {
@@ -24,13 +32,13 @@ class ValueTest extends PHPUnit_Framework_TestCase {
   }
   
   public function testGetDoesntExist() {
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $value = new Dummy();
     $test = $value->asdf;
   }
   
   public function testSetDoesntExist() {
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $value = new Dummy();
     $value->asdf = 'asdf';
   }
@@ -39,7 +47,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value = new GetOnly();
     $this->assertEquals('test', $value->something);
     
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $value->something = '';
   }
   
@@ -47,7 +55,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value = new SetOnly();
     $value->something = '';
     
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $a = $value->something;
   }
   
@@ -55,7 +63,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value = new ArrayGetOnly();
     $this->assertEquals('test', $value->something['test']);
     
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $value->something['test'] = '';
   }
   
@@ -63,35 +71,35 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value = new ArraySetOnly();
     $value->something['test'] = '';
     
-    $this->setExpectedException('BapCat\Propifier\NoSuchPropertyException');
+    $this->setExpectedException(NoSuchPropertyException::class);
     $a = $value->something['test'];
   }
   
   public function testMismatchedPropertiesViaGet() {
     $value = new Mismatch();
     
-    $this->setExpectedException('BapCat\Propifier\MismatchedPropertiesException');
+    $this->setExpectedException(MismatchedPropertiesException::class);
     $a = $value->something;
   }
   
   public function testMismatchedPropertiesViaSet() {
     $value = new Mismatch();
     
-    $this->setExpectedException('BapCat\Propifier\MismatchedPropertiesException');
+    $this->setExpectedException(MismatchedPropertiesException::class);
     $value->something = '';
   }
   
   public function testGetterWithTooManyParams() {
     $value = new InvalidGet();
     
-    $this->setExpectedException('BapCat\Propifier\InvalidPropertyException');
+    $this->setExpectedException(InvalidPropertyException::class);
     $a = $value->something;
   }
   
   public function testSetterWithTooManyParams() {
     $value = new InvalidSet();
     
-    $this->setExpectedException('BapCat\Propifier\InvalidPropertyException');
+    $this->setExpectedException(InvalidPropertyException::class);
     $value->something = '';
   }
   
@@ -100,5 +108,88 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $getMethod = new GetterCalledGetMethod();
     
     $this->assertSame('test', $getMethod->method);
+  }
+  
+  public function testIteration() {
+    $in = ['a' => 'b'];
+    
+    $itr = new ArrayItrOnly(['a' => 'b']);
+    
+    $out = [];
+    foreach($itr->arr as $key => $val) {
+      $out[$key] = $val;
+    }
+    
+    $this->assertSame($in, $out);
+  }
+  
+  public function testIterationAndAccessor() {
+    $in = ['a' => 'b'];
+    
+    $itr = new ArrayItrAndGet(['a' => 'b']);
+    
+    $out = [];
+    foreach($itr->arr as $key => $val) {
+      $out[$key] = $val;
+    }
+    
+    $this->assertSame($in, $out);
+    $this->assertSame($in['a'], $itr->arr['a']);
+    
+    $this->setExpectedException(NoSuchPropertyException::class);
+    $itr->arr['test'] = '';
+  }
+  
+  public function testIterationAndMutator() {
+    $in = ['a' => 'b'];
+    
+    $itr = new ArrayItrAndSet(['a' => 'b']);
+    
+    $itr->arr['a'] = 'test';
+    
+    $out = [];
+    foreach($itr->arr as $key => $val) {
+      $out[$key] = $val;
+    }
+    
+    $this->assertSame(['a' => 'test'], $out);
+    
+    $this->setExpectedException(NoSuchPropertyException::class);
+    $itr->arr['test'];
+  }
+  
+  public function testIterationWithGetAndSet() {
+    $in = ['a' => 'b'];
+    
+    $itr = new ArrayAll(['a' => 'b']);
+    
+    $out = [];
+    foreach($itr->arr as $key => $val) {
+      $out[$key] = $val;
+    }
+    
+    $this->assertSame($in, $out);
+    
+    $itr->arr['test'] = 'test';
+    
+    $this->assertSame('test', $itr->arr['test']);
+  }
+  
+  public function testIterationWithOnlyGetter() {
+    $value = new ArrayGetOnly();
+    
+    $this->setExpectedException(NoSuchPropertyException::class);
+    foreach($value->something as $val) {
+      
+    }
+  }
+  
+  public function testIterationWithOnlySetter() {
+    $value = new ArraySetOnly();
+    
+    $this->setExpectedException(NoSuchPropertyException::class);
+    foreach($value->something as $val) {
+      
+    }
   }
 }
