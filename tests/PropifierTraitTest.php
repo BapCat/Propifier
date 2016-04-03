@@ -34,7 +34,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
   public function testGetDoesntExist() {
     $this->setExpectedException(NoSuchPropertyException::class);
     $value = new Dummy();
-    $test = $value->asdf;
+    $value->asdf;
   }
   
   public function testSetDoesntExist() {
@@ -56,7 +56,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value->something = '';
     
     $this->setExpectedException(NoSuchPropertyException::class);
-    $a = $value->something;
+    $value->something;
   }
   
   public function testArrayGetOnly() {
@@ -72,14 +72,14 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value->something['test'] = '';
     
     $this->setExpectedException(NoSuchPropertyException::class);
-    $a = $value->something['test'];
+    $value->something['test'];
   }
   
   public function testMismatchedPropertiesViaGet() {
     $value = new Mismatch();
     
     $this->setExpectedException(MismatchedPropertiesException::class);
-    $a = $value->something;
+    $value->something;
   }
   
   public function testMismatchedPropertiesViaSet() {
@@ -93,7 +93,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     $value = new InvalidGet();
     
     $this->setExpectedException(InvalidPropertyException::class);
-    $a = $value->something;
+    $value->something;
   }
   
   public function testSetterWithTooManyParams() {
@@ -143,7 +143,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
   public function testIterationAndMutator() {
     $in = ['a' => 'b'];
     
-    $itr = new ArrayItrAndSet(['a' => 'b']);
+    $itr = new ArrayItrAndSet($in);
     
     $itr->arr['a'] = 'test';
     
@@ -161,7 +161,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
   public function testIterationWithGetAndSet() {
     $in = ['a' => 'b'];
     
-    $itr = new ArrayAll(['a' => 'b']);
+    $itr = new ArrayAll($in);
     
     $out = [];
     foreach($itr->arr as $key => $val) {
@@ -180,7 +180,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     
     $this->setExpectedException(NoSuchPropertyException::class);
     foreach($value->something as $val) {
-      
+      $this->assertSame('Fail if we get here', $val);
     }
   }
   
@@ -189,7 +189,7 @@ class ValueTest extends PHPUnit_Framework_TestCase {
     
     $this->setExpectedException(NoSuchPropertyException::class);
     foreach($value->something as $val) {
-      
+      $this->assertSame('Fail if we get here', $val);
     }
   }
 }
