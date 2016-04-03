@@ -192,4 +192,13 @@ class ValueTest extends PHPUnit_Framework_TestCase {
       $this->assertSame('Fail if we get here', $val);
     }
   }
+  
+  public function testIsSet() {
+    $obj = new GetOnly();
+    
+    $this->assertTrue(isset($obj->something));
+    $this->assertFalse(empty($obj->something));
+    $this->assertFalse(isset($obj->something_else));
+    $this->assertTrue(empty($obj->something_else));
+  }
 }
