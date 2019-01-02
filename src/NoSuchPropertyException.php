@@ -4,34 +4,30 @@ use Exception;
 
 /**
  * Indicates an accessor or mutator does not exist for a given property
- * 
+ *
  * @author    Corey Frenette
- * @copyright Copyright (c) 2015, BapCat
+ * @copyright Copyright (c) 2019, BapCat
  */
 class NoSuchPropertyException extends Exception {
   /**
-   * The property that does not exist
-   * 
-   * @var ReflectionMethod
+   * @var  string   $property  The property that does not exist
    */
   private $property;
-  
+
   /**
-   * Constructor
-   * 
-   * @param ReflectionMethod $property The property that does not exist
+   * @param  string  $property  The property that does not exist
    */
-  public function __construct($property) {
+  public function __construct(string $property) {
     parent::__construct("Property [$property] does not exist.");
     $this->property = $property;
   }
-  
+
   /**
    * Get the property that does not exist
-   * 
-   * @return ReflectionMethod The property that does not exist
+   *
+   * @return  string  The property that does not exist
    */
-  public function getProperty() {
+  public function getProperty(): string {
     return $this->property;
   }
 }
