@@ -1,7 +1,7 @@
 {
   "name": "bapcat/propifier",
   "description": "A trait that improves PHP's properties",
-  "license": "GPLv3",
+  "license": "GPL-3.0-or-later",
   "homepage": "http://github.com/BapCat/Propifier",
   "keywords": ["Property", "Properties", "Accessor", "Mutator", "Get", "Set", "Getter", "Setter"],
   "authors": [
