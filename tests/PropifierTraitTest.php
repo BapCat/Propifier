@@ -32,19 +32,17 @@ class PropifierTraitTest extends TestCase {
     $this->assertEquals(100, $value->array[0]);
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\NoSuchPropertyException
-   */
   public function testGetDoesntExist(): void {
     $value = new Dummy();
+
+    $this->expectException(NoSuchPropertyException::class);
     $value->asdf;
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\NoSuchPropertyException
-   */
   public function testSetDoesntExist(): void {
     $value = new Dummy();
+
+    $this->expectException(NoSuchPropertyException::class);
     $value->asdf = 'asdf';
   }
 
@@ -80,17 +78,13 @@ class PropifierTraitTest extends TestCase {
     $value->something['test'];
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\MismatchedPropertiesException
-   */
   public function testMismatchedPropertiesViaGet(): void {
     $value = new Mismatch();
+
+    $this->expectException(MismatchedPropertiesException::class);
     $value->something;
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\MismatchedPropertiesException
-   */
   public function testMismatchedPropertiesViaSet(): void {
     $value = new Mismatch();
 
@@ -98,19 +92,17 @@ class PropifierTraitTest extends TestCase {
     $value->something = '';
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\InvalidPropertyException
-   */
   public function testGetterWithTooManyParams(): void {
     $value = new InvalidGet();
+
+    $this->expectException(InvalidPropertyException::class);
     $value->something;
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\InvalidPropertyException
-   */
   public function testSetterWithTooManyParams(): void {
     $value = new InvalidSet();
+
+    $this->expectException(InvalidPropertyException::class);
     $value->something = '';
   }
 
@@ -186,23 +178,19 @@ class PropifierTraitTest extends TestCase {
     $this->assertSame('test', $itr->arr['test']);
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\NoSuchPropertyException
-   */
   public function testIterationWithOnlyGetter(): void {
     $value = new ArrayGetOnly();
 
+    $this->expectException(NoSuchPropertyException::class);
     foreach($value->something as $val) {
       $this->assertSame('Fail if we get here', $val);
     }
   }
 
-  /**
-   * @expectedException  BapCat\Propifier\NoSuchPropertyException
-   */
   public function testIterationWithOnlySetter(): void {
     $value = new ArraySetOnly();
 
+    $this->expectException(NoSuchPropertyException::class);
     foreach($value->something as $val) {
       $this->assertSame('Fail if we get here', $val);
     }
