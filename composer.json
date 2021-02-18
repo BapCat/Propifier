@@ -2,7 +2,7 @@
   "name": "bapcat/propifier",
   "description": "A trait that improves PHP's properties",
   "license": "GPL-3.0-or-later",
-  "homepage": "http://github.com/BapCat/Propifier",
+  "homepage": "https://github.com/BapCat/Propifier",
   "keywords": ["Property", "Properties", "Accessor", "Mutator", "Get", "Set", "Getter", "Setter"],
   "authors": [
     {
@@ -10,13 +10,21 @@
       "email": "corey@narwhunderful.com"
     }
   ],
+  "config": {
+    "preferred-install": "dist",
+    "platform": {
+      "php": "7.4"
+    },
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
   "require": {
-    "php": "^7.1",
-    "icanboogie/inflector": "^1.3"
+    "php": "^7.4|^8.0",
+    "icanboogie/inflector": "^2.0"
   },
   "require-dev": {
     "roave/security-advisories": "dev-master",
-    "phpunit/phpunit": "^7.5"
+    "phpunit/phpunit": "^9.5"
   },
   "autoload": {
     "psr-4": {
