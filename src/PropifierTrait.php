@@ -61,9 +61,9 @@ trait PropifierTrait {
     return array_filter($methods, function(ReflectionMethod $method) {
       return
         (strlen($method->name) > 3) && (
-          (strpos($method->name, 'get') === 0) ||
-          (strpos($method->name, 'set') === 0) ||
-          (strpos($method->name, 'itr') === 0)
+          (str_starts_with($method->name, 'get')) ||
+          (str_starts_with($method->name, 'set')) ||
+          (str_starts_with($method->name, 'itr'))
         )
       ;
     });

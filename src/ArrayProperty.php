@@ -75,7 +75,7 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    *
    * @return  mixed  The return value of the accessor
    */
-  public function offsetGet($offset) {
+  public function offsetGet($offset): mixed {
     if($this->get !== null) {
       return $this->get->invoke($this->obj, $offset);
     }
@@ -116,10 +116,10 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    *
    * @param  mixed  $offset
    *
-   * @return  mixed
+   * @return  void
    */
-  public function offsetUnset($offset) {
-    return null;
+  public function offsetUnset($offset): void {
+
   }
 
   /**
