@@ -75,7 +75,7 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    *
    * @return  mixed  The return value of the accessor
    */
-  public function offsetGet($offset): mixed {
+  public function offsetGet(mixed $offset): mixed {
     if($this->get !== null) {
       return $this->get->invoke($this->obj, $offset);
     }
@@ -91,7 +91,7 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    * @param  mixed  $offset  The index into the array to mutate
    * @param  mixed  $value   The new value
    */
-  public function offsetSet($offset, $value): void {
+  public function offsetSet(mixed $offset, mixed $value): void {
     if($this->set !== null) {
       $this->set->invoke($this->obj, $offset, $value);
       return;
@@ -107,7 +107,7 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    *
    * @return  bool
    */
-  public function offsetExists($offset): bool {
+  public function offsetExists(mixed $offset): bool {
     return false;
   }
 
@@ -118,7 +118,7 @@ class ArrayProperty implements ArrayAccess, IteratorAggregate {
    *
    * @return  void
    */
-  public function offsetUnset($offset): void {
+  public function offsetUnset(mixed $offset): void {
 
   }
 
